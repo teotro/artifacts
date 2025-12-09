@@ -1,4 +1,4 @@
-# 🚀 TraceQ: Quantum Trace Analysis Framework
+# 🚀 TraceQ: FTQC Access Trace Analysis Framework
 
 **TraceQ** is a Python-based software framework designed for the analysis of space-time activity traces from lattice surgery in **Fault-Tolerant Quantum Computing (FTQC)**.
 
