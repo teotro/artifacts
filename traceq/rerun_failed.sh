@@ -1,5 +1,8 @@
 #!/bin/bash
 
+BASE_DIR="${TRACEQ_ROOT:-$(pwd)}"
+SYNTHETIC_DIR="$BASE_DIR/synthetic_benchmarks"
+
 # --- CONFIGURATION ---
 MAX_ATTEMPTS=10
 TIMEOUT_SEC=3600
@@ -32,6 +35,10 @@ while [ "$#" -gt 0 ]; do
     esac
 done
 
+# Export variables so they are accessible to subshells/xargs
+export BASE_DIR
+export SYNTHETIC_DIR
+
 echo "Starting SAFE Global Parallel Retry script."
 echo "Max concurrent failure checks (single Python process each): $NUM_CORES"
 
@@ -54,19 +61,18 @@ process_failed_perturbation_sequentially() {
     local TIMEOUT_SEC=$6
 
     local PERT="pert_${PERT_NUM}"
-    local BENCH_DIR="/home/george/artifacts/traceq/synthetic_benchmarks/$BENCH_NAME"
+    local BENCH_DIR="$SYNTHETIC_DIR/$BENCH_NAME"
     local OUTPUT_DIR="targets/$LAYOUT/$BENCH_NAME"
     local QASM_FILE="$BENCH_DIR/${PERT}.qasm"
     local OUTPUT_FILE="$OUTPUT_DIR/${PERT}.txt"
     local ERR_FILE="$OUTPUT_DIR/${PERT}.txt.err"
 
-    # Only proceed if the error file still exists
     if [ ! -f "$ERR_FILE" ]; then
-        echo "   [SKIP] $BENCH_NAME/$PERT: Error file already removed by another process."
+        echo "   [SKIP] $BENCH_NAME/$PERT: Error file already removed."
         return 0
     fi
     
-    echo "   [START] $BENCH_NAME/$PERT: Retrying sequentially (up to $MAX_ATTEMPTS times)..."
+    echo "   [START] $BENCH_NAME/$PERT: Retrying (up to $MAX_ATTEMPTS times)..."
     
     # Loop through attempts SEQUENTIALLY
     for attempt in $(seq 1 $MAX_ATTEMPTS); do
@@ -76,7 +82,7 @@ process_failed_perturbation_sequentially() {
         > "$ERR_FILE"
         
         # Execute the job
-        timeout "$TIMEOUT_SEC" python tracemaker_theo.py \
+        timeout "$TIMEOUT_SEC" python "$BASE_DIR/tracemaker_theo.py" \
             --path="$QASM_FILE" \
             --num_qubits="$NUM_QUBITS" \
             --$LAYOUT \
