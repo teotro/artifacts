@@ -40,8 +40,6 @@ conda activate traceq
 
 This phase runs the core trace reconstruction algorithm (`tracemaker`) on the synthetic benchmarks, testing robustness against 30 different perturbations across three layouts.
 
-**⚠️ IMPORTANT:** Before running, navigate to the `traceq` directory and **update all necessary paths** in `run_tracemaker.sh` and `rerun_failed.sh`.
-
 ```bash
 # Navigate to the main directory
 cd traceq
