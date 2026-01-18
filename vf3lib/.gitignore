@@ -1,0 +1,5 @@
+*txt
+*.nfs*
+*.out
+*.json
+bin/vf*
