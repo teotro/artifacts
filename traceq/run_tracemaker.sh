@@ -1,5 +1,9 @@
 #!/bin/bash
 
+BASE_DIR="${TRACEQ_ROOT:-$(pwd)}"
+SYNTHETIC_DIR="$BASE_DIR/synthetic_benchmarks"
+RESULTS_ROOT="${TRACEQ_RESULTS_DIR:-$BASE_DIR/targets}"
+
 # Default values
 PARALLEL_RUN=false
 NUM_CORES=1  # Default to 1 if not parallel
@@ -52,6 +56,10 @@ declare -A qubit_lookup=(
     ["random_16"]=34 ["random_17"]=39 ["random_18"]=50 ["random_19"]=56 ["random_20"]=72
 )
 
+export SYNTHETIC_DIR
+export RESULTS_ROOT
+export BASE_DIR
+
 # --- Function to run a single perturbation ---
 # This function is executed by each worker thread/process
 run_perturbation() {
@@ -72,7 +80,7 @@ run_perturbation() {
     echo "  ▶️  Running $PERT ($BENCH_NAME)..."
 
     # Execute the python script with a timeout
-    timeout 3600 python tracemaker_theo.py \
+    timeout 3600 python "$BASE_DIR/tracemaker_theo.py" \
         --path="$QASM_FILE" \
         --num_qubits="$NUM_QUBITS" \
         --$LAYOUT \
@@ -101,10 +109,18 @@ export -f run_perturbation # Export the function for use in subshells
 # --- Main Logic ---
 
 # Loop through each random benchmark
-for j in {18..20}; do
+for j in {1..20}; do
     BENCH_NAME="random_${j}"
-    BENCH_DIR="/home/george/artifacts/traceq/synthetic_benchmarks/$BENCH_NAME" # Replace with your own path!
-    OUTPUT_DIR="targets/$LAYOUT/$BENCH_NAME"
+    # BENCH_DIR="/home/george/artifacts/traceq/synthetic_benchmarks/$BENCH_NAME" # Replace with your own path!
+    # OUTPUT_DIR="targets/$LAYOUT/$BENCH_NAME"
+    BENCH_DIR="$SYNTHETIC_DIR/$BENCH_NAME"
+    OUTPUT_DIR="$RESULTS_ROOT/$LAYOUT/$BENCH_NAME"
+
+    # Safety check: does the benchmark directory exist?
+    if [ ! -d "$BENCH_DIR" ]; then
+        echo "⚠️  Warning: Benchmark directory $BENCH_DIR not found. Skipping."
+        continue
+    fi
 
     NUM_QUBITS=${qubit_lookup[$BENCH_NAME]}
     
@@ -139,4 +155,5 @@ done
 
 echo "---"
 echo "🎉 All benchmarks completed for layout: $LAYOUT"
+echo "📂 Results available in: $RESULTS_ROOT/$LAYOUT"
 
