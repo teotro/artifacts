@@ -203,16 +203,6 @@ def _l1_traces_to_logical_qubits(l1_traces, expected_num_of_qubits=None):
     
     return logical_qubits
 
-# def _l1_traces_to_connected_components(l1_traces):
-#     # second pass, gather connected components
-#     connected_components = OrderedDict()
-
-#     for idx, trace in l1_traces.items():
-#         connected_components[idx] = heuristics.get_connected_components(trace["trace"])
-        
-#         # TODO: one issue: have we captured all logicals? If not, we may erroneously label components
-    
-#     return connected_components
 
 def _get_known_unknown_paths(l1_trace, logical_qubits):
 
@@ -231,24 +221,6 @@ def _get_known_unknown_paths(l1_trace, logical_qubits):
         known.extend(solved)
         unknown.append(remainder)
     
-    
-    # for cc in connected_components:
-    #     if len(cc.intersection(logical_qubits)) == 2:
-    #         known.append(cc)
-    #     else:
-    #         unknown.append(cc)
-    
-    # # now, try to reconstruct some of the unknown paths
-    # unknown_solved = []
-    # unknown_hard_to_solve = []
-    # for uk in unknown:
-    #     unsolved, solved = connected_component_to_paths(uk, logical_qubits)
-        
-    #     unknown_hard_to_solve.append(unsolved)
-    #     unknown_solved.append(solved)
-        
-    # known.extend(unknown_solved)
-    # unknown = unknown_hard_to_solve
     
     return known, unknown
 

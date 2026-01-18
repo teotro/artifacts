@@ -216,37 +216,6 @@ def visualize_dag(G, title="Reconstructed DAG Visualization", node_size= 200, fo
 
 
 from multiprocessing import Pool, cpu_count
-# def enumerate_all_connections_backtrack_dfs_parallel(trace_matrix):
-#     """
-#     Parallel version of enumerate_all_connections_backtrack_dfs.
-#     Same input/output: returns a list of solutions, each a list of ((u,v), path).
-#     """
-
-#     # 1) Identify qubit endpoints and wire-tiles
-#     qubits = [tuple(rc) for rc in np.argwhere(trace_matrix == 0b1110000)]
-#     wires = {
-#         tuple(rc)
-#         for rc in np.argwhere((trace_matrix & 0b1110000) == 0b1010000)
-#     }
-
-#     # nothing to pair
-#     if len(qubits) < 2:
-#         return []
-
-#     # We'll always pair qubits[0] with one of qubits[1:]
-#     u = qubits[0]
-#     targets = qubits[1:]
-
-#     # dispatch one task per (u, v)
-#     tasks = [(trace_matrix, u, v) for v in targets]
-
-#     with Pool(processes=1) as pool:
-#         results = pool.map(_worker_pair_and_backtrack, tasks)
-
-#     # flatten
-#     solutions = [sol for sublist in results for sol in sublist]
-#     return solutions
-from multiprocessing import Pool, cpu_count
 
 def enumerate_all_connections_backtrack_dfs_parallel(trace_matrix):
     """
