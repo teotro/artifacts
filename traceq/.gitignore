@@ -1,0 +1,6 @@
+__pycache__/
+
+/QASM_plots_chris
+/chris/QASM_plots/*
+/qasm_files/merged
+targets/
